@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Bot documents are written only by trusted server-side Firebase Admin SDK.
+    match /bots/{botId} {
+      allow read: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
